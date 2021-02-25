@@ -8,7 +8,7 @@ namespace Bazi\Paipan;
  * 感谢项目作者的无私分享,其提供了详尽的历法转换原理,JS源码及部分PHP源码,项目地址:
  * http://www.bieyu.com/
  */
-class paipan
+class Paipan
 {
     /**
      * 四柱是否区分 早晚子 时,true则23:00-24:00算成上一天
