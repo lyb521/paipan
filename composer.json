@@ -1,7 +1,7 @@
 {
     "name": "bazi/paipan",
     "description": "八字排盘",
-    "license": "license",
+    "license": "Apache-2.0",
     "authors": [
         {
             "name": "lyb521",
