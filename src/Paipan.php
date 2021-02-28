@@ -1196,7 +1196,7 @@ class Paipan
      * @param int $yy
      * @return array $this->jq[(i+21)%24]
      */
-    public function Get24JQ($yy)
+    public function get24JQ($yy)
     {
         $yy = intval($yy);
 
@@ -1687,5 +1687,72 @@ class Paipan
         $rt['cyy'] = $this->cyy[$yytg[2]]; //日干阴阳
 
         return $rt;
+    }
+
+
+    /**
+     * Finding All Element Combinations of an Array https://docstore.mik.ua/orelly/webprog/pcook/ch04_25.htm
+     * @param array $array
+     * @return array
+     */
+    function pcArrayPowerset($array)
+    {
+        $results = array(array());
+        foreach ($array as $element) {
+            foreach ($results as $combination) {
+                array_push($results, array_merge(array($element), $combination));
+            }
+        }
+        return $results;
+    }
+
+
+    /**
+     * 从天干地支数组查出所有刑冲合害关系
+     * @param array $tg 天干数组
+     * @param array $dz 地支数组
+     * @return array
+     */
+    function getGX($tg, $dz)
+    {
+        $list = array();
+        foreach ($this->gx as $gx) { //[0针对天干1针对地支, 关系类型, [发起者...], 形成者, 文字描述]
+
+            $to = ($gx[0] == 0) ? $tg : $dz; //要匹配的类型
+
+            $fd = array_intersect($to, $gx[2]); //求交集,返回的键名与$to是一致的
+            if (empty(array_diff($gx[2], $fd))) { //说明存在此关系
+
+                $c1 = count($fd);
+                $c2 = count($gx[2]);
+
+                $fds = array(); //最终关联的
+                if ($c1 < $c2) { //比如亥亥自刑,在只有一个亥的时候也会来这里
+
+                }
+                if ($c1 == $c2) { //有且只有一个此类关系
+                    array_push($fds, $fd);
+                }
+                if ($c1 > $c2) { //存在多个此类关系,先算出所有可能的组合,再匹配判断以精确指定是哪一个位置
+                    $set = $this->pcArrayPowerset(array_keys($fd));
+                    foreach ($set as $keys) {
+                        if (count($keys) != $c2) {
+                            continue;
+                        }
+                        $fd = array();
+                        foreach ($keys as $key) {
+                            $fd[$key] = $to[$key];
+                        }
+                        if (empty(array_diff($gx[2], $fd))) {
+                            array_push($fds, $fd);
+                        }
+                    }
+                }
+                foreach ($fds as $fd) { //组合成期望的返回
+                    array_push($list, [$fd, $gx]);
+                }
+            }
+        }
+        return $list;
     }
 }
